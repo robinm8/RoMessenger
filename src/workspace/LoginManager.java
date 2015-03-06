@@ -97,7 +97,7 @@ public class LoginManager {
 		System.gc();
 	}
 
-	public static void loginAsNextUser() {
+	public static int loginAsNextUser() {
 		int next = -1;
 
 		for (int index = 0; index < users.size(); index++) {
@@ -113,6 +113,8 @@ public class LoginManager {
 		if (next > -1) {
 			changeUser((String) users.keySet().toArray()[next]);
 		}
+		
+		return next;
 	}
 
 	public static boolean canLoginToAnotherUser() {
@@ -222,7 +224,7 @@ public class LoginManager {
 					HtmlPage result = (HtmlPage) submit.click();
 					System.out.println(result.getUrl().toString());
 					if (result.getUrl().toString()
-							.equals("http://m.roblox.com/")) {
+							.equals("http://m.roblox.com/home")) {
 						System.out.println("Success");
 						loggedInToMobile = true;
 						loginToRobloxDesktop(username, pass);

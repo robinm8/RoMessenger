@@ -12,7 +12,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-@SuppressWarnings("deprecation")
 public class ManipXML {
 	File fXmlFile = new File(System.getProperty("user.dir")
 			+ "\\RoMessenger_Data.xml");
@@ -34,8 +33,6 @@ public class ManipXML {
 					Element message = getOpenMessage();
 					Link.g.subjectBox.setText(message.getAttribute("subject"));
 					Link.g.messageBox.setText(message.getTextContent());
-					GUI.groupIdCheck.setText(getCheckedGroup().getAttribute(
-							"id"));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -136,20 +133,5 @@ public class ManipXML {
 			}
 		}
 		return null;
-	}
-
-	public Element getCheckedGroup() {
-		try {
-			Element checkedGroupElement = (Element) Link.doc
-					.getElementsByTagName("checkedGroup").item(0);
-			return checkedGroupElement;
-		} catch (Exception e) {}
-		return null;
-	}
-
-	public void setCheckedGroup(String name, String value) {
-		if (getCheckedGroup() != null) {
-			getCheckedGroup().setAttribute(name, value);
-		}
 	}
 }

@@ -30,7 +30,7 @@ public class SendMessage {
 						messageSent = sendMessage(name.toString(), subject,
 								messageBox);
 						if (!messageSent) {
-							Link.g.changeState("Page unavailable. Re-trying to send message.");
+							Link.g.changeState("Page unavailable. Trying again to send message.");
 						} else {
 							Link.g.changeState("Message " + (sentMessages + 1)
 									+ " of " + Link.names.length
@@ -101,16 +101,23 @@ public class SendMessage {
 						Link.g.changeState(floodCheck.getTextContent());
 						Thread.sleep(1000);
 
-						if (floodCheck.getTextContent() == "You have reached your send limit.  Please wait a few moments to re-send."
-								|| (floodCheck.getTextContent()
-										.equals("You have reached your send limit.  Please wait a few moments to re-send."))) {
+						if (floodCheck.getTextContent().contains("limit")) {
 							System.out
 									.println("You are allowed to send messages to this user.");
 							System.out.println("floodcheck found.");
 							if (LoginManager.canLoginToAnotherUser()) {
-								LoginManager.loginAsNextUser();
+								int nextUser = LoginManager.loginAsNextUser();
+
+								if (nextUser <= 0) {
+									System.out
+											.println("next user is first user, sleep 60 seconds");
+									Thread.sleep(60000);
+								}
+							} else {
+								System.out
+										.println("next user is first user, sleep 60 seconds");
+								Thread.sleep(60000);
 							}
-							Thread.sleep(3000);
 							floodcheckStoppedUs = true;
 						} else {
 							System.out

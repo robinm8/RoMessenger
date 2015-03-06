@@ -26,7 +26,7 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class Link {
-	static double version = 5;
+	static double version = 5.1;
 	static String app = "Ro-Messenger " + version;
 	static String desc = app
 			+ " \n"
@@ -38,13 +38,12 @@ public class Link {
 	static boolean handledData = false;
 	static String openMessage = "Message 1";
 	static String loginStatusCompare = "";
-	static WebClient manager = new WebClient(BrowserVersion.INTERNET_EXPLORER_8);
+	static WebClient manager = new WebClient(BrowserVersion.FIREFOX_3_6);
 	static WebClient mobileManager = new WebClient(
 			BrowserVersion.INTERNET_EXPLORER_8);
 	static Downloader d = new Downloader();
 	static Timer timer = new Timer();
 	static GetUserInfo userInfo = new GetUserInfo();
-	static ImportUsersFromFriends importFriends = new ImportUsersFromFriends();
 	static ImportUsersFromPlace importUsersWithPlace = new ImportUsersFromPlace();
 	static GetGroupMembers getGroupMembers = new GetGroupMembers();
 	static GetGroupInfo getGroupInfo = new GetGroupInfo();
@@ -122,11 +121,10 @@ public class Link {
 				}
 			}
 			if (!duplicateFound
-					&& !Link.x.getCheckedGroup().getAttribute("id").equals("0")
-					&& !Link.userInfo.IsInGroup(Link.userInfo
-							.getUserIdFromUserName(name), Integer
-							.parseInt(Link.x.getCheckedGroup().getAttribute(
-									"id")))) {
+					&& !GUI.groupIdCheck.getText().equals("0")
+					&& !Link.userInfo.IsInGroup(
+							Link.userInfo.getUserIdFromUserName(name),
+							Integer.parseInt(GUI.groupIdCheck.getText()))) {
 				if (currentItemPos + 1 >= names.length) {
 					Object[] temp = new Object[names.length * 2];
 					System.arraycopy(names, 0, temp, 0, names.length);
@@ -152,7 +150,8 @@ public class Link {
 				return true;
 			}
 
-		} catch (NullPointerException e) {}
+		} catch (NullPointerException e) {
+		}
 		return false;
 	}
 
@@ -201,7 +200,7 @@ public class Link {
 
 					System.runFinalization();
 					System.gc();
-					
+
 					if (!handledData) {
 						handledData = true;
 						x.Do("create");

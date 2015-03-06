@@ -851,17 +851,12 @@ public class GUI extends JFrame {
 		JPanel south = new JPanel(new BorderLayout());
 		JPanel southUp = new JPanel(new GridLayout(4, 0));
 		JPanel southUpLow = new JPanel(new GridLayout(0, 3));
-		JPanel southLow = new JPanel(new GridLayout(4, 2));
+		JPanel southLow = new JPanel(new GridLayout(4, 1));
 
 		final JTextField input = new JTextField(20);
 		final JButton clear = new JButton("Clear");
 		final JButton remove = new JButton("Remove");
 		final JButton add = new JButton("Add User");
-		final JButton importYourFriends = new JButton("Import Your Friends");
-		final JButton importYourBestFriends = new JButton(
-				"Import Your Best Friends");
-		final JButton importUsersFriends = new JButton(
-				"Import Friends From User");
 		final JButton importFromPlace = new JButton("Import From Place");
 		final JButton importGroup = new JButton("Import From Group");
 		final JButton importTextFile = new JButton("Import From List");
@@ -879,9 +874,6 @@ public class GUI extends JFrame {
 		clear.setFocusPainted(false);
 		remove.setFocusPainted(false);
 		add.setFocusPainted(false);
-		importYourFriends.setFocusPainted(false);
-		importYourBestFriends.setFocusPainted(false);
-		importUsersFriends.setFocusPainted(false);
 		importFromPlace.setFocusPainted(false);
 		importGroup.setFocusPainted(false);
 		importTextFile.setFocusPainted(false);
@@ -894,19 +886,12 @@ public class GUI extends JFrame {
 		final JScrollPane listScroller = new JScrollPane(list);
 		listScroller.setPreferredSize(new Dimension(200, 80));
 
-		importYourFriends.setEnabled(true);
-		importUsersFriends.setEnabled(true);
-
-		southLow.add(importYourFriends);
 		southLow.add(importGroup);
 
-		southLow.add(importYourBestFriends);
 		southLow.add(importFromPlace);
 
-		southLow.add(importUsersFriends);
 		southLow.add(importTextFile);
 
-		southLow.add(groupCheckTitle);
 		southLow.add(groupIdCheck);
 
 		southUpLow.add(remove);
@@ -1097,77 +1082,6 @@ public class GUI extends JFrame {
 			}
 		});
 
-		importYourFriends.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new SwingWorker() {
-					protected Object doInBackground() throws Exception {
-						importUsersFriends.setEnabled(false);
-						importYourFriends.setEnabled(false);
-						if (!LoginManager.currentUser.isEmpty()) {
-							int userId = Link.userInfo
-									.getUserIdFromUserName(LoginManager.currentUser);
-
-							Link.importFriends.importFriendsList(userId);
-
-							list.setListData(Link.names);
-							list.setSelectedIndex(0);
-							list.ensureIndexIsVisible(0);
-
-						} else {
-							changeState("Must be logged in before importing your friends");
-						}
-						importYourFriends.setEnabled(true);
-						importUsersFriends.setEnabled(true);
-						return null;
-					}
-				}.execute();
-			}
-		});
-
-		importUsersFriends.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new SwingWorker() {
-					protected Object doInBackground() throws Exception {
-						importUsersFriends.setEnabled(false);
-						importYourFriends.setEnabled(false);
-						String result = JOptionPane
-								.showInputDialog(
-										null,
-										"Input the username or userid that you would like to import friends from.",
-										"Input UserId",
-										JOptionPane.QUESTION_MESSAGE);
-						try {
-							int res = Integer.parseInt(result);
-							Link.importFriends.importFriendsList(res);
-						} catch (NumberFormatException e1) {
-							int userId = Link.userInfo
-									.getUserIdFromUserName(result);
-							if (userId != -1) {
-								Link.importFriends.importFriendsList(userId);
-							}
-						}
-
-						list.setListData(Link.names);
-						list.setSelectedIndex(0);
-						list.ensureIndexIsVisible(0);
-
-						importUsersFriends.setEnabled(true);
-						importYourFriends.setEnabled(true);
-						return null;
-					}
-				}.execute();
-			}
-		});
-
-		importYourBestFriends.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Link.importFriends.importBestFriends();
-				list.setListData(Link.names);
-				list.setSelectedIndex(0);
-				list.ensureIndexIsVisible(0);
-			}
-		});
-
 		exportToTextFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -1309,26 +1223,26 @@ public class GUI extends JFrame {
 			}
 		});
 
+		groupIdCheck.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent arg0) {
+				groupIdCheck.setText("");
+			}
+
+			public void focusLost(FocusEvent arg0) {
+				if (groupIdCheck.getText().isEmpty()) {
+					groupIdCheck.setText("0");
+				}
+			}
+		});
+
 		groupIdCheck.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent arg0) {
 				try {
 					Integer.parseInt(groupIdCheck.getText());
 				} catch (NumberFormatException e) {
-					groupIdCheck.setText(groupIdCheck.getText().substring(0,
-							groupIdCheck.getText().length() - 1));
+					groupIdCheck.setText("");
 				}
-			}
-		});
-
-		groupIdCheck.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				list.requestFocus();
-				if (groupIdCheck.getText().isEmpty()) {
-					groupIdCheck.setText("0");
-				}
-				Link.x.setCheckedGroup("id", groupIdCheck.getText());
 			}
 		});
 

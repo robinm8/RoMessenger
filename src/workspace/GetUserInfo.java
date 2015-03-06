@@ -59,7 +59,7 @@ public class GetUserInfo {
 	}
 
 	public boolean IsInGroup(int userId, int groupId) {
-		if (!Link.x.getCheckedGroup().getAttribute("id").equals("0")) {
+		if (!GUI.groupIdCheck.getText().equals("0")) {
 			try {
 				HtmlPage page = manager
 						.getPage("http://www.roblox.com/Game/LuaWebService/HandleSocialRequest.ashx?method=IsInGroup&playerid="
