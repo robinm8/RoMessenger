@@ -26,7 +26,7 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class Link {
-	static double version = 5.1;
+	static double version = 5.2;
 	static String app = "Ro-Messenger " + version;
 	static String desc = app
 			+ " \n"
@@ -121,10 +121,11 @@ public class Link {
 				}
 			}
 			if (!duplicateFound
-					&& !GUI.groupIdCheck.getText().equals("0")
-					&& !Link.userInfo.IsInGroup(
-							Link.userInfo.getUserIdFromUserName(name),
-							Integer.parseInt(GUI.groupIdCheck.getText()))) {
+					&& !Link.x.getCheckedGroup().getAttribute("id").equals("0")
+					&& !Link.userInfo.IsInGroup(Link.userInfo
+							.getUserIdFromUserName(name), Integer
+							.parseInt(Link.x.getCheckedGroup().getAttribute(
+									"id")))) {
 				if (currentItemPos + 1 >= names.length) {
 					Object[] temp = new Object[names.length * 2];
 					System.arraycopy(names, 0, temp, 0, names.length);

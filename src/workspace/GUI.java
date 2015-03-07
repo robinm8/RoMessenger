@@ -63,7 +63,6 @@ public class GUI extends JFrame {
 	boolean showingList = false;
 	boolean sending = false;
 
-	static JTextField groupIdCheck = new JTextField("0");
 	static JLabel loginStatus = new JLabel("Ready to Login");
 
 	JLabel state = new JLabel("Welcome");
@@ -74,6 +73,7 @@ public class GUI extends JFrame {
 	JButton send = new TranslucentButton("Send", null);
 	JButton toggleLookAndFeel = new TranslucentButton("Toggle Look and Feel",
 			null);
+	JButton groupIdButton = new TranslucentButton("GroupId Check", null);
 
 	JLabel sTitle = new JLabel("Subject:");
 	JLabel mTitle = new JLabel("Message:");
@@ -171,6 +171,7 @@ public class GUI extends JFrame {
 		JPanel menu = new JPanel(new GridLayout(9, 0, 0, 7));
 
 		settings.add(toggleLookAndFeel);
+		settings.add(groupIdButton);
 
 		menu.add(about);
 		menu.add(login);
@@ -306,6 +307,21 @@ public class GUI extends JFrame {
 					}
 				}
 
+			}
+		});
+
+		groupIdButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String groupIdString = JOptionPane
+						.showInputDialog("Input GroupId here to ensure group members don't receive recruitment messages");
+
+				try {
+					Integer.parseInt(groupIdString);
+
+					Link.x.setCheckedGroup("id", groupIdString);
+				} catch (NumberFormatException ex) {
+				}
 			}
 		});
 
@@ -851,7 +867,7 @@ public class GUI extends JFrame {
 		JPanel south = new JPanel(new BorderLayout());
 		JPanel southUp = new JPanel(new GridLayout(4, 0));
 		JPanel southUpLow = new JPanel(new GridLayout(0, 3));
-		JPanel southLow = new JPanel(new GridLayout(4, 1));
+		JPanel southLow = new JPanel(new GridLayout(3, 1));
 
 		final JTextField input = new JTextField(20);
 		final JButton clear = new JButton("Clear");
@@ -891,8 +907,6 @@ public class GUI extends JFrame {
 		southLow.add(importFromPlace);
 
 		southLow.add(importTextFile);
-
-		southLow.add(groupIdCheck);
 
 		southUpLow.add(remove);
 		southUpLow.add(input);
@@ -1219,29 +1233,6 @@ public class GUI extends JFrame {
 					list.setListData(Link.names);
 					list.setSelectedIndex(0);
 					list.ensureIndexIsVisible(0);
-				}
-			}
-		});
-
-		groupIdCheck.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent arg0) {
-				groupIdCheck.setText("");
-			}
-
-			public void focusLost(FocusEvent arg0) {
-				if (groupIdCheck.getText().isEmpty()) {
-					groupIdCheck.setText("0");
-				}
-			}
-		});
-
-		groupIdCheck.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				try {
-					Integer.parseInt(groupIdCheck.getText());
-				} catch (NumberFormatException e) {
-					groupIdCheck.setText("");
 				}
 			}
 		});

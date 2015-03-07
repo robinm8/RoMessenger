@@ -113,7 +113,7 @@ public class LoginManager {
 		if (next > -1) {
 			changeUser((String) users.keySet().toArray()[next]);
 		}
-		
+
 		return next;
 	}
 
@@ -121,7 +121,8 @@ public class LoginManager {
 		return users.keySet().size() > 1;
 	}
 
-	public static void loginToRobloxMobile(String username, String pass) {
+	public static void loginToRobloxMobile(final String username,
+			final String pass) {
 		try {
 			Link.mobileManager.getPage("http://m.roblox.com/Account/LogOff");
 			final HtmlPage loginPage = Link.mobileManager
@@ -138,12 +139,18 @@ public class LoginManager {
 				password.setAttribute("value", pass);
 
 				boolean captchaIsRequired = false;
-
 				try {
-					List<?> captcha = loginPage.getByXPath("//img");
-					System.out.println(captcha.get(0).toString());
+					List<?> iframeList = loginPage.getByXPath("//iframe");
 
-					HtmlElement captchaImg = (HtmlElement) captcha.get(0);
+					HtmlElement iframe = (HtmlElement) iframeList.get(0);
+
+					final HtmlPage captchaPage = Link.mobileManager
+							.getPage(iframe.getAttribute("src").toString());
+
+					List<?> imgList = captchaPage.getByXPath("//img");
+
+					HtmlElement captchaImg = (HtmlElement) imgList.get(0);
+
 					final JFrame captchaInput = new JFrame("Submit Captcha");
 					JPanel container = new JPanel(new BorderLayout());
 					JPanel bottom = new JPanel(new BorderLayout());
@@ -174,10 +181,10 @@ public class LoginManager {
 
 					GUI.loginStatus.setText("Recaptcha Detected!");
 
-					System.out.println("http://m.roblox.com"
+					System.out.println("https://www.google.com/recaptcha/api/"
 							+ captchaImg.getAttribute("src").toString());
 					ImageIcon icon = new ImageIcon(
-							new URL("http://m.roblox.com"
+							new URL("https://www.google.com/recaptcha/api/"
 									+ captchaImg.getAttribute("src").toString()));
 					thumb.setIcon(icon);
 					captchaInput.pack();
@@ -187,32 +194,48 @@ public class LoginManager {
 					submitRecaptcha.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							try {
-								HtmlElement attemptedSolution = loginPage
-										.getElementByName("AttemptedSolution");
+								HtmlElement attemptedSolution = captchaPage
+										.getElementById("recaptcha_response_field");
 								attemptedSolution.setAttribute("value",
 										input.getText());
 
-								List<?> link = loginPage.getByXPath("//button");
-								HtmlButton submit = (HtmlButton) link.get(0);
+								HtmlElement submit = (HtmlElement) captchaPage
+										.getElementByName("submit");
+
 								HtmlPage result = (HtmlPage) submit.click();
-								System.out.println(result.getUrl().toString());
 
-								List<?> pageError = result
-										.getByXPath("//p/text()");
+								List<?> link = result.getByXPath("//textarea");
+								HtmlElement confirmation = (HtmlElement) link
+										.get(0);
 
-								if (result.getUrl().toString()
-										.equals("http://m.roblox.com/")) {
+								HtmlElement challengeField = (HtmlElement) loginPage
+										.getElementByName("recaptcha_challenge_field");
+								challengeField.setTextContent(confirmation
+										.getTextContent());
+
+								List<?> list = loginPage.getByXPath("//button");
+								HtmlButton loginButton = (HtmlButton) list
+										.get(0);
+								HtmlPage afterLoginPage = (HtmlPage) loginButton
+										.click();
+								System.out.println(afterLoginPage.getUrl()
+										.toString());
+								if (afterLoginPage.getUrl().toString()
+										.equals("http://m.roblox.com/home")) {
+									System.out.println("Success");
 									loggedInToMobile = true;
-									Thread.sleep(1000);
-									loginToRobloxDesktop(userLoggingIn,
-											userPass);
+									loginToRobloxDesktop(username, pass);
 								} else {
-									GUI.loginStatus.setText(pageError.get(1)
-											.toString());
+									GUI.loginStatus
+											.setText("Invalid Credentials.");
 								}
-								captchaInput.dispose();
 							} catch (Exception e1) {
+								System.out
+										.println("Recaptcha response incorrect, fetching new challenge");
+								GUI.loginStatus.setText("Response incorrect");
+								loginToRobloxMobile(username, pass);
 							}
+							captchaInput.dispose();
 						}
 					});
 				} catch (Exception e) {

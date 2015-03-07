@@ -111,10 +111,11 @@ public class ManipXML {
 			}
 			format = null;
 		}
-		
+
 		try {
 			finalize();
-		} catch (Throwable e) {}
+		} catch (Throwable e) {
+		}
 	}
 
 	public Element getOpenMessage() {
@@ -133,5 +134,21 @@ public class ManipXML {
 			}
 		}
 		return null;
+	}
+
+	public Element getCheckedGroup() {
+		try {
+			Element checkedGroupElement = (Element) Link.doc
+					.getElementsByTagName("checkedGroup").item(0);
+			return checkedGroupElement;
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
+	public void setCheckedGroup(String name, String value) {
+		if (getCheckedGroup() != null) {
+			getCheckedGroup().setAttribute(name, value);
+		}
 	}
 }
